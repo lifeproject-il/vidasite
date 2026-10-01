@@ -18,6 +18,7 @@
 | משתנה | ערך | מה הוא עושה |
 |---|---|---|
 | `NEXT_PUBLIC_WP_URL` | `https://vidahome.co.il` | כתובת הוורדפרס (תמונות, מוצרים, קופה) |
+| `NEXT_PUBLIC_SHOP_URL` | ריק כרגע; `https://shop.vidahome.co.il` כשעוברים לחנות החדשה | החנות שממנה נמשכים מוצרים ואליה עוברים לעגלה ולקופה. ריק = הוורדפרס הישן |
 | `NEXT_PUBLIC_SITE_URL` | `https://new.vidahome.co.il` | הכתובת של האתר החדש |
 | `NEXT_PUBLIC_ENABLE_TRACKING` | ריק בתצוגה, `1` באתר החי | מפעיל GTM, פיקסל מטא, Flashy ו-UserWay |
 | `NEXT_PUBLIC_ALLOW_INDEXING` | ריק בתצוגה, `1` באתר החי | מאפשר לגוגל לאנדקס |

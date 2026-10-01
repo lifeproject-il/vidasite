@@ -18,7 +18,10 @@ const nextConfig: NextConfig = {
     // Optimized images are cached for a year (file names change when images change).
     minimumCacheTTL: 31536000,
     // Fallback: images not copied locally are optimized straight from WordPress.
-    remotePatterns: [{ protocol: "https", hostname: "vidahome.co.il", pathname: "/wp-content/uploads/**" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "vidahome.co.il", pathname: "/wp-content/uploads/**" },
+      { protocol: "https", hostname: "shop.vidahome.co.il", pathname: "/wp-content/uploads/**" },
+    ],
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
