@@ -2,7 +2,8 @@
 // at build time, so the new site serves (and compresses) its own images.
 //
 // It finds images automatically: every upload("...") and ig("...") call in src/,
-// plus the WooCommerce product images of every `wooId: <id>` in src/.
+// plus the WooCommerce product images of every product in src/lib/products.ts
+// (from the new store when NEXT_PUBLIC_SHOP_URL is set, otherwise from WordPress).
 // For each image it records the real width/height in src/lib/media-manifest.json,
 // which the <Img> component uses to serve right-sized WebP/AVIF versions.
 // If an image can't be downloaded, the site falls back to the WordPress URL for it.
@@ -11,6 +12,8 @@ import { join, dirname } from "node:path";
 import sharp from "sharp";
 
 const WP_URL = (process.env.NEXT_PUBLIC_WP_URL || "https://vidahome.co.il").replace(/\/$/, "");
+const SHOP_URL = (process.env.NEXT_PUBLIC_SHOP_URL || WP_URL).replace(/\/$/, "");
+const USING_NEW_SHOP = SHOP_URL !== WP_URL;
 const root = process.cwd();
 const publicDir = join(root, "public", "media");
 const manifestPath = join(root, "src", "lib", "media-manifest.json");
@@ -42,17 +45,20 @@ for (const file of await listSourceFiles(join(root, "src"))) {
 const wooIds = new Set();
 for (const file of await listSourceFiles(join(root, "src"))) {
   const code = await readFile(file, "utf8");
-  for (const m of code.matchAll(/\bwooId:\s*(\d+)/g)) wooIds.add(m[1]);
+  const key = USING_NEW_SHOP ? "shopWooId" : "wooId";
+  for (const m of code.matchAll(new RegExp(`\\b${key}:\\s*(\\d+)`, "g"))) wooIds.add(m[1]);
 }
-const uploadsPrefix = `${WP_URL}/wp-content/uploads/`;
+const uploadsPrefix = `${SHOP_URL}/wp-content/uploads/`;
+// Images from the new store are keyed "shop:<path>" so they never clash with WordPress paths.
+const keyFor = (path) => (USING_NEW_SHOP ? `shop:${path}` : path);
 for (const id of wooIds) {
   try {
-    const res = await fetch(`${WP_URL}/wp-json/wc/store/v1/products/${id}`);
+    const res = await fetch(`${SHOP_URL}/wp-json/wc/store/v1/products/${id}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const product = await res.json();
     for (const img of product.images ?? []) {
       if (!img.src?.startsWith(uploadsPrefix)) continue;
-      paths.add(decodeURIComponentSafe(img.src.slice(uploadsPrefix.length)));
+      paths.add(keyFor(decodeURIComponentSafe(img.src.slice(uploadsPrefix.length))));
     }
   } catch (err) {
     console.warn(`media: could not read product ${id} images (${err.message})`);
@@ -66,13 +72,15 @@ let failed = 0;
 
 await Promise.all(
   [...paths].map(async (path) => {
-    const name = localName(path);
+    const fromShop = path.startsWith("shop:");
+    const filePath = fromShop ? path.slice(5) : path;
+    const name = (fromShop ? "shop/" : "") + localName(filePath);
     const target = join(publicDir, name);
     try {
       try {
         await access(target);
       } catch {
-        const res = await fetch(`${WP_URL}/wp-content/uploads/${encodeURI(decodeURIComponentSafe(path))}`);
+        const res = await fetch(`${fromShop ? SHOP_URL : WP_URL}/wp-content/uploads/${encodeURI(decodeURIComponentSafe(filePath))}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         await mkdir(dirname(target), { recursive: true });
         await writeFile(target, Buffer.from(await res.arrayBuffer()));
