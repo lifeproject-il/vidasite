@@ -12,13 +12,17 @@ type Props = {
   dots?: boolean;
   label: string;
   className?: string;
+  /** Auto-advance every N ms (pauses on hover and stops after the visitor interacts). */
+  autoplay?: number;
 };
 
 // Lightweight swipeable carousel built on native scroll-snap (no slider library).
-export default function Carousel({ children, perView, gap = { desktop: 20, mobile: 10 }, arrows = true, dots = true, label, className }: Props) {
+export default function Carousel({ children, perView, gap = { desktop: 20, mobile: 10 }, arrows = true, dots = true, label, className, autoplay }: Props) {
   const track = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState(0);
   const [pages, setPages] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const [stopped, setStopped] = useState(false);
   const items = Children.toArray(children);
 
   const measure = useCallback(() => {
@@ -43,6 +47,13 @@ export default function Carousel({ children, perView, gap = { desktop: 20, mobil
     el.scrollTo({ left: -target * el.clientWidth, behavior: "smooth" });
   };
 
+  useEffect(() => {
+    if (!autoplay || paused || stopped || pages < 2) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t = window.setTimeout(() => go(page + 1), autoplay);
+    return () => window.clearTimeout(t);
+  });
+
   const style = {
     "--per-desktop": perView.desktop,
     "--per-mobile": perView.mobile,
@@ -51,7 +62,17 @@ export default function Carousel({ children, perView, gap = { desktop: 20, mobil
   } as CSSProperties;
 
   return (
-    <div className={`carousel ${className ?? ""}`} style={style} role="region" aria-roledescription="carousel" aria-label={label}>
+    <div
+      className={`carousel ${className ?? ""}`}
+      style={style}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={label}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onPointerDown={() => setStopped(true)}
+      onFocus={() => setStopped(true)}
+    >
       <div className="carousel__viewport">
         {arrows && (
           <button type="button" className="carousel__arrow carousel__arrow--prev" onClick={() => go(page - 1)} aria-label="הקודם">
