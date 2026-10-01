@@ -107,8 +107,10 @@ ul { padding: 0; list-style: none; }
   position: relative; padding-top: 100px;
   background-size: cover; background-position: center; background-color: #111;
 }
+.hero__bg { object-fit: cover; object-position: center; z-index: 0; }
+.hero > picture { position: relative; z-index: 1; display: block; }
 .hero__image { width: 100%; height: auto; margin: 0 auto; }
-.hero__cta { position: absolute; left: 0; right: 0; bottom: 54px; display: flex; justify-content: center; }
+.hero__cta { position: absolute; z-index: 2; left: 0; right: 0; bottom: 54px; display: flex; justify-content: center; }
 
 /* ---------- Video (mobile only) ---------- */
 .video-section { display: none; }
