@@ -12,6 +12,14 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  images: {
+    // Serve the smallest modern format the browser supports.
+    formats: ["image/avif", "image/webp"],
+    // Optimized images are cached for a year (file names change when images change).
+    minimumCacheTTL: 31536000,
+    // Fallback: images not copied locally are optimized straight from WordPress.
+    remotePatterns: [{ protocol: "https", hostname: "vidahome.co.il", pathname: "/wp-content/uploads/**" }],
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

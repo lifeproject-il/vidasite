@@ -7,3 +7,4 @@ next-env.d.ts
 .env.local
 .DS_Store
 public/fonts/*.woff2
+public/media/
