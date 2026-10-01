@@ -1,9 +1,11 @@
 import { getImageProps } from "next/image";
 import Carousel from "@/components/Carousel";
 import Img from "@/components/Img";
+import { CustomerPhotos, RecipesSection } from "@/components/HomeSections";
 import VimeoPlayer from "@/components/VimeoPlayer";
-import { ClockIcon, CommentIcon, HeartIcon, InstagramIcon, LevelIcon, PlayIcon, PotIcon } from "@/components/icons";
-import { features, hero, instagram, productImage, recipes, reviews, video } from "@/lib/content";
+import { CommentIcon, HeartIcon, InstagramIcon, PlayIcon } from "@/components/icons";
+import { features, hero, instagram, productImage, video } from "@/lib/content";
+import { BuyButton } from "@/components/HomeSections";
 import { links, mediaSize } from "@/lib/site";
 
 /* eslint-disable @next/next/no-img-element */
@@ -22,13 +24,6 @@ function HeroImage() {
   );
 }
 
-function BuyButton({ variant = "glass" }: { variant?: "glass" | "solid" }) {
-  return (
-    <a className={`buy-btn buy-btn--${variant}`} href={links.product}>
-      לרכישה מהירה
-    </a>
-  );
-}
 
 export default function HomePage() {
   return (
@@ -65,37 +60,8 @@ export default function HomePage() {
         </ul>
       </section>
 
-      {/* Recipes + reviews heading (gray band) */}
-      <section className="recipes">
-        <h2 className="section-title section-title--sm">מתכונים מומלצים</h2>
-        <Carousel label="מתכונים מומלצים" perView={{ desktop: 4, mobile: 1.15 }} gap={{ desktop: 29, mobile: 12 }}>
-          {recipes.map((r) => (
-            <article className="recipe-card" key={r.title}>
-              <a href={r.href} className="recipe-card__image">
-                <Img src={r.image} alt={r.title} sizes="(max-width: 767px) 87vw, 25vw" />
-              </a>
-              <ul className="recipe-card__meta">
-                <li><ClockIcon className="icon-accent" /> <span>{r.minutes}</span></li>
-                <li><LevelIcon className="icon-accent" /> <span>{r.level}</span></li>
-                <li><PotIcon className="icon-accent" /> <span>{r.kashrut}</span></li>
-              </ul>
-              <h3 className="recipe-card__title"><a href={r.href}>{r.title}</a></h3>
-            </article>
-          ))}
-        </Carousel>
-        <div className="center"><BuyButton variant="solid" /></div>
-        <h2 className="section-title section-title--lg reviews-title">ההמלצות שלכם</h2>
-      </section>
-
-      {/* Customer reviews (black band) */}
-      <section className="reviews" aria-label="ההמלצות שלכם">
-        <Carousel label="המלצות לקוחות" perView={{ desktop: 4, mobile: 2 }} gap={{ desktop: 20, mobile: 10 }} arrows={false}>
-          {reviews.map((src, i) => (
-            <Img key={src} className="review-image" src={src} alt={`המלצת לקוח ${i + 1}`} width={587} height={1024} sizes="(max-width: 767px) 50vw, 25vw" />
-          ))}
-        </Carousel>
-        <div className="center"><BuyButton /></div>
-      </section>
+      <RecipesSection />
+      <CustomerPhotos />
 
       {/* Instagram */}
       <section className="insta" aria-label="אינסטגרם">

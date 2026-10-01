@@ -13,6 +13,20 @@ export const WP_URL = (process.env.NEXT_PUBLIC_WP_URL || "https://vidahome.co.il
  */
 export const upload = (path: string) => (manifest as MediaManifest)[path]?.src ?? `${WP_URL}/wp-content/uploads/${path}`;
 
+/**
+ * Any WordPress media URL (e.g. product images from WooCommerce) -> local copy if the build
+ * downloaded it, otherwise the original URL (still optimized via next/image remotePatterns).
+ */
+export function mediaUrl(url: string): string {
+  const prefix = `${WP_URL}/wp-content/uploads/`;
+  if (!url.startsWith(prefix)) return url;
+  const path = url.slice(prefix.length);
+  const m = manifest as MediaManifest;
+  let decoded = path;
+  try { decoded = decodeURIComponent(path); } catch {}
+  return m[path]?.src ?? m[decoded]?.src ?? url;
+}
+
 /** Width/height of a local image (from the build-time manifest), looked up by its src. */
 export function mediaSize(src: string): { width: number; height: number } | undefined {
   for (const entry of Object.values(manifest as MediaManifest)) {
@@ -34,7 +48,7 @@ export const tracking = {
 };
 
 export const links = {
-  product: wp("/product/vida-kitchen-hero"),
+  product: "/product/vida-kitchen-hero",
   about: wp("/about"),
   recipes: wp("/recipes"),
   contact: wp("/%d7%a6%d7%95%d7%a8-%d7%a7%d7%a9%d7%a8"),
