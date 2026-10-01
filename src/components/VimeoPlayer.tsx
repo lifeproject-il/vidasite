@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Img from "./Img";
 import { PlayIcon } from "./icons";
 
 // Shows a cover image; loads the Vimeo player only after a tap (keeps the page fast).
@@ -18,8 +19,7 @@ export default function VimeoPlayer({ id, cover, title }: { id: string; cover: s
         />
       ) : (
         <button type="button" className="video__cover" onClick={() => setPlaying(true)} aria-label={`ניגון: ${title}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={cover} alt="" loading="lazy" />
+          <Img src={cover} alt="" fill sizes="100vw" />
           <span className="video__play"><PlayIcon size={34} /></span>
         </button>
       )}
