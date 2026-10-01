@@ -8,8 +8,8 @@ import Gallery from "@/components/product/Gallery";
 import Reviews from "@/components/product/Reviews";
 import Stars from "@/components/product/Stars";
 import Videos from "@/components/product/Videos";
-import { productPages } from "@/lib/products";
-import { mediaUrl, WP_URL } from "@/lib/site";
+import { productId, productPages } from "@/lib/products";
+import { mediaUrl, SHOP_URL, WP_URL } from "@/lib/site";
 import { formatPrice, getProduct, getReviewPhotos, getReviews } from "@/lib/woo";
 
 /* eslint-disable @next/next/no-img-element */
@@ -29,7 +29,7 @@ const stripHtml = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const page = pageFor((await params).slug);
   if (!page) return {};
-  const product = await getProduct(page.wooId);
+  const product = await getProduct(productId(page));
   const image = product.images[0];
   return {
     title: `${product.name} - Vida`,
@@ -48,8 +48,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const page = pageFor((await params).slug);
   if (!page) notFound();
 
-  const product = await getProduct(page.wooId);
-  const [reviews, photos] = await Promise.all([getReviews(page.wooId), getReviewPhotos(product.permalink)]);
+  const product = await getProduct(productId(page));
+  const [reviews, photos] = await Promise.all([getReviews(productId(page)), getReviewPhotos(product.permalink)]);
 
   const { prices } = product;
   const unit = prices.currency_minor_unit;
@@ -130,7 +130,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           {/* Short description comes from WooCommerce (written in WordPress admin). */}
           <div className="pshort" dangerouslySetInnerHTML={{ __html: product.short_description }} />
 
-          <AddToCart cartBase={`${WP_URL}/cart/?add-to-cart=${product.id}`} productName={product.name} inStock={product.is_in_stock && product.is_purchasable} />
+          <AddToCart cartBase={`${SHOP_URL}/cart/?add-to-cart=${product.id}`} productName={product.name} inStock={product.is_in_stock && product.is_purchasable} />
 
           <p className="pprice2">₪ {price}</p>
 
