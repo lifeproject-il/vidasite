@@ -1,10 +1,25 @@
 // Central place for URLs, IDs and content shared across the site.
 // The WordPress/WooCommerce site stays the backend (products, orders, payments, media).
+import manifest from "./media-manifest.json";
+
+type MediaManifest = Record<string, { src: string; width: number | null; height: number | null }>;
 
 export const WP_URL = (process.env.NEXT_PUBLIC_WP_URL || "https://vidahome.co.il").replace(/\/$/, "");
 
-/** Build a URL to a file in WordPress media uploads, e.g. upload("2025/10/p01.png"). */
-export const upload = (path: string) => `${WP_URL}/wp-content/uploads/${path}`;
+/**
+ * Image from WordPress media uploads, e.g. upload("2025/10/p01.png").
+ * At build time scripts/fetch-media.mjs copies it into public/media, so this returns
+ * the local copy (/media/...). If the copy is missing it falls back to the WordPress URL.
+ */
+export const upload = (path: string) => (manifest as MediaManifest)[path]?.src ?? `${WP_URL}/wp-content/uploads/${path}`;
+
+/** Width/height of a local image (from the build-time manifest), looked up by its src. */
+export function mediaSize(src: string): { width: number; height: number } | undefined {
+  for (const entry of Object.values(manifest as MediaManifest)) {
+    if (entry.src === src && entry.width && entry.height) return { width: entry.width, height: entry.height };
+  }
+  return undefined;
+}
 
 /** Build a URL to a page that still lives on WordPress. */
 export const wp = (path: string) => `${WP_URL}${path.startsWith("/") ? path : `/${path}`}`;
