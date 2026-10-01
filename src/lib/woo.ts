@@ -3,7 +3,7 @@
 // Uses the public WooCommerce Store API (no keys, no passwords). It can only READ products
 // and reviews – it cannot change anything in WooCommerce.
 // Results are cached and refreshed at most once a minute, so the WordPress site isn't loaded.
-import { WP_URL } from "./site";
+import { SHOP_URL } from "./site";
 
 /** How often (seconds) product data is refreshed from WooCommerce. */
 export const REVALIDATE_SECONDS = 60;
@@ -44,7 +44,7 @@ export type WooReview = {
 };
 
 async function storeApi<T>(path: string): Promise<T> {
-  const res = await fetch(`${WP_URL}/wp-json/wc/store/v1/${path}`, {
+  const res = await fetch(`${SHOP_URL}/wp-json/wc/store/v1/${path}`, {
     method: "GET",
     headers: { Accept: "application/json" },
     next: { revalidate: REVALIDATE_SECONDS },
