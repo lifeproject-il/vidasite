@@ -1,11 +1,14 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { links, logoUrl, nav } from "@/lib/site";
 import { BagIcon, CloseIcon, MailIcon, MenuIcon, UserIcon } from "./icons";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const isActive = (href: string) => !href.startsWith("http") && (pathname === href || pathname.startsWith(`${href}/`) || (href === "/recipes" && pathname.startsWith("/recipies/")));
 
   return (
     <>
@@ -28,7 +31,7 @@ export default function Header() {
 
           <nav className="header__nav" aria-label="ניווט ראשי">
             {nav.map((item) => (
-              <a key={item.href} href={item.href}>{item.label}</a>
+              <a key={item.href} href={item.href} className={isActive(item.href) ? "is-active" : undefined}>{item.label}</a>
             ))}
           </nav>
 
@@ -51,7 +54,7 @@ export default function Header() {
 
         <nav id="mobile-menu" className={`mobile-menu${open ? " is-open" : ""}`} aria-label="תפריט נייד" hidden={!open}>
           {nav.map((item) => (
-            <a key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</a>
+            <a key={item.href} href={item.href} className={isActive(item.href) ? "is-active" : undefined} onClick={() => setOpen(false)}>{item.label}</a>
           ))}
         </nav>
       </header>

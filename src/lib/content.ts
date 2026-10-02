@@ -1,5 +1,5 @@
 // Home page content, copied 1:1 from the current vidahome.co.il home page.
-import { upload, wp } from "./site";
+import { upload } from "./site";
 
 export const hero = {
   background: upload("2025/10/5c4e3bb2f91c7b767c291ddbc9b7f275bg.jpg"),
@@ -28,25 +28,25 @@ export const features: { image: string; title: string; text?: string[] }[] = [
 export const recipes = [
   {
     title: "ברוקולי צלויים",
-    href: wp("/recipies/%d7%91%d7%a8%d7%95%d7%a7%d7%95%d7%9c%d7%99-%d7%a6%d7%9c%d7%95%d7%99%d7%99%d7%9d"),
+    href: "/recipies/%d7%91%d7%a8%d7%95%d7%a7%d7%95%d7%9c%d7%99-%d7%a6%d7%9c%d7%95%d7%99%d7%99%d7%9d",
     image: upload("2025/11/air-fryer-broccoli-image-step-3-768x1024.jpg"),
     minutes: 12, level: "קל", kashrut: "פרווה",
   },
   {
     title: "כרעי עוף",
-    href: wp("/recipies/%d7%9b%d7%a8%d7%a2%d7%99-%d7%a2%d7%95%d7%a3"),
+    href: "/recipies/%d7%9b%d7%a8%d7%a2%d7%99-%d7%a2%d7%95%d7%a3",
     image: upload("2025/11/crispy-lemon-chicken-thighs-1-13-730x913-1.jpg"),
     minutes: 25, level: "קל", kashrut: "בשרי",
   },
   {
     title: "פלאפל ביתי",
-    href: wp("/recipies/%d7%a4%d7%9c%d7%90%d7%a4%d7%9c-%d7%91%d7%99%d7%aa%d7%99"),
+    href: "/recipies/%d7%a4%d7%9c%d7%90%d7%a4%d7%9c-%d7%91%d7%99%d7%aa%d7%99",
     image: upload("2025/11/del089923-falafel-web-049-rv-lead-64dbb1b90f19a-1024x1024.avif"),
     minutes: 10, level: "בינוני", kashrut: "פרווה",
   },
   {
     title: "מתכון לצ'יפס ביתי",
-    href: wp("/recipies/%d7%9e%d7%aa%d7%9b%d7%95%d7%9f-%d7%9c%d7%a6%d7%99%d7%a4%d7%a1-%d7%91%d7%99%d7%aa%d7%99"),
+    href: "/recipies/%d7%9e%d7%aa%d7%9b%d7%95%d7%9f-%d7%9c%d7%a6%d7%99%d7%a4%d7%a1-%d7%91%d7%99%d7%aa%d7%99",
     image: upload("2025/11/French-fries-848x477-1.webp"),
     minutes: 15, level: "קל", kashrut: "פרווה",
   },
