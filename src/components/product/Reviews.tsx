@@ -1,8 +1,7 @@
+import Image from "next/image";
 import Stars from "./Stars";
 import { mediaUrl } from "@/lib/site";
 import { formatReviewDate, type ReviewPhoto, type WooReview } from "@/lib/woo";
-
-/* eslint-disable @next/next/no-img-element */
 
 // Customer reviews from WooCommerce (same design as the reviews block on the current site).
 export default function Reviews({
@@ -44,11 +43,16 @@ export default function Reviews({
               <div className="vreview__text" dangerouslySetInnerHTML={{ __html: r.review }} />
               {pics.length > 0 && (
                 <div className="vreview__photos">
-                  {pics.map((p) => (
-                    <a key={p.full} href={mediaUrl(p.full)} target="_blank" rel="noopener nofollow">
-                      <img src={mediaUrl(p.thumb)} alt="תמונה מחוות דעת" width={84} height={84} loading="lazy" />
-                    </a>
-                  ))}
+                  {pics.map((p) => {
+                    // Served through the new site's image optimizer (from new.vidahome.co.il, compressed
+                    // and cached), even though customers upload them to WordPress.
+                    const full = mediaUrl(p.full);
+                    return (
+                      <a key={p.full} href={`/_next/image?url=${encodeURIComponent(full)}&w=1920&q=75`} target="_blank" rel="noopener nofollow">
+                        <Image src={full} alt="תמונה מחוות דעת" width={84} height={84} sizes="84px" />
+                      </a>
+                    );
+                  })}
                 </div>
               )}
             </article>
