@@ -1,12 +1,14 @@
 // Product pages. Price, stock, images, short description and reviews come live from
 // WooCommerce (see woo.ts). The rest of the page – the designed content that lives in
 // Elementor today – is here, copied 1:1 from the current product page.
-import { upload, wp } from "./site";
+import { upload, USING_NEW_SHOP, wp } from "./site";
 
 export type ProductPage = {
   slug: string;
-  /** WooCommerce product ID (also used by scripts/fetch-media.mjs to copy product images). */
+  /** Product ID in the old WooCommerce (vidahome.co.il). */
   wooId: number;
+  /** Product ID in the new WooCommerce (shop.vidahome.co.il). */
+  shopWooId: number;
   category: { name: string; href: string };
   why: { text: string; image: string; bullets: { icon: string; text: string }[] };
   inBox: { image: string; title: string; text: string }[];
@@ -21,6 +23,7 @@ export type ProductPage = {
 export const kitchenHero: ProductPage = {
   slug: "vida-kitchen-hero",
   wooId: 5381,
+  shopWooId: 19,
   category: { name: "VIDA", href: wp("/product-category/vida") },
   why: {
     text:
@@ -106,3 +109,6 @@ export const kitchenHero: ProductPage = {
 };
 
 export const productPages: ProductPage[] = [kitchenHero];
+
+/** The WooCommerce ID to use for this product in the store the site is connected to. */
+export const productId = (page: ProductPage) => (USING_NEW_SHOP ? page.shopWooId : page.wooId);

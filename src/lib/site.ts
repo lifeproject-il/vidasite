@@ -7,6 +7,14 @@ type MediaManifest = Record<string, { src: string; width: number | null; height:
 export const WP_URL = (process.env.NEXT_PUBLIC_WP_URL || "https://vidahome.co.il").replace(/\/$/, "");
 
 /**
+ * The WooCommerce store the site reads products from and sends buyers to (cart/checkout).
+ * Defaults to the old WordPress site. Set NEXT_PUBLIC_SHOP_URL=https://shop.vidahome.co.il
+ * in Hostinger to switch to the new, clean store. Content pages (about, recipes...) stay on WP_URL.
+ */
+export const SHOP_URL = (process.env.NEXT_PUBLIC_SHOP_URL || WP_URL).replace(/\/$/, "");
+export const USING_NEW_SHOP = SHOP_URL !== WP_URL;
+
+/**
  * Image from WordPress media uploads, e.g. upload("2025/10/p01.png").
  * At build time scripts/fetch-media.mjs copies it into public/media, so this returns
  * the local copy (/media/...). If the copy is missing it falls back to the WordPress URL.
@@ -18,10 +26,16 @@ export const upload = (path: string) => (manifest as MediaManifest)[path]?.src ?
  * downloaded it, otherwise the original URL (still optimized via next/image remotePatterns).
  */
 export function mediaUrl(url: string): string {
+  const m = manifest as MediaManifest;
+  const shopPrefix = `${SHOP_URL}/wp-content/uploads/`;
+  if (USING_NEW_SHOP && url.startsWith(shopPrefix)) {
+    let p = url.slice(shopPrefix.length);
+    try { p = decodeURIComponent(p); } catch {}
+    return m[`shop:${p}`]?.src ?? url;
+  }
   const prefix = `${WP_URL}/wp-content/uploads/`;
   if (!url.startsWith(prefix)) return url;
   const path = url.slice(prefix.length);
-  const m = manifest as MediaManifest;
   let decoded = path;
   try { decoded = decodeURIComponent(path); } catch {}
   return m[path]?.src ?? m[decoded]?.src ?? url;
@@ -59,8 +73,8 @@ export const links = {
   labs: wp("/%d7%9e%d7%a2%d7%91%d7%93%d7%95%d7%aa"),
   accessibility: wp("/%d7%94%d7%a6%d7%94%d7%a8%d7%aa-%d7%a0%d7%92%d7%99%d7%a9%d7%95%d7%aa"),
   shop: wp("/shop"),
-  cart: wp("/cart"),
-  account: wp("/my-account"),
+  cart: `${SHOP_URL}/cart`,
+  account: `${SHOP_URL}/my-account`,
   whatsapp: "https://api.whatsapp.com/send?phone=972552843100",
   instagram: "https://www.instagram.com/get.vida/",
 };
